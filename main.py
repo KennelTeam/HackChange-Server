@@ -17,7 +17,7 @@ GOOGLE_CLIENT_ID = '452745278337-csmmksfrl50qq33j37r2rg9900v245k5.apps.googleuse
 app = flask.Flask(__name__)
 app.config['DEBUG'] = True
 
-app.run()
+
 
 
 def investor_by_token(token: str) -> bool:
@@ -109,7 +109,7 @@ def authent():
     return response
 
 
-@app.route('/getInvestor')
+@app.route('/getProfile')
 def user_profile():
     query_args = request.args
     if 'profile_id' not in query_args:
@@ -242,10 +242,14 @@ def topics_by_instrument():
 
     topics = store.get_session().query(Topic).filter(Topic.instrument_id == instrument_id).all()
     mapped = list(map(lambda topic: {
+        'id': topic.id,
         'title': topic.title
     }, topics))
 
-    return jsonify(mapped)
+    return jsonify({
+        'ok': True,
+        'topics': mapped
+    })
 
 @app.route('/postsByTopic')
 def posts_by_topic():
@@ -268,7 +272,10 @@ def posts_by_topic():
         'text': post.text
     }, posts))
 
-    return jsonify(mapped)
+    return jsonify({
+        'ok': True,
+        'posts': mapped
+    })
 
 @app.route('/addPost')
 def add_post():
@@ -289,3 +296,5 @@ def add_post():
     return jsonify({
         'ok': True
     })
+
+app.run(host='0.0.0.0', port=8080)

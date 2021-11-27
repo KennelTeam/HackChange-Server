@@ -6,7 +6,7 @@ from flask import request, jsonify
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 from sqlalchemy.sql.functions import user
-from store.images import Comment, Instrument, Investor, Post, Topic
+from store.images import Comment, Instrument, Investor, Post, Subscription, Topic
 from tokens import generate_access_token
 
 import store
@@ -302,11 +302,12 @@ def posts_by_topic():
 
     session = store.get_session()
     posts = session.query(Post).filter(Post.topic_id == topic_id).all()
-    
+
     mapped = []
     for post in posts:
         topic = session.query(Topic).filter(Topic.id == post.topic_id).first()
-        author = session.query(Investor).filter(Investor.id == post.author_id).first()
+        author = session.query(Investor).filter(
+            Investor.id == post.author_id).first()
         mapped.append({
             'id': post.id,
             'topic': {
@@ -389,7 +390,8 @@ def comments_by_post():
 
     mapped = []
     for comment in comments:
-        commenter = session.query(Investor).filter(Investor.id == comment.commenter_id).first()
+        commenter = session.query(Investor).filter(
+            Investor.id == comment.commenter_id).first()
         mapped.append({
             'commenter': {
                 'id': commenter.id,
@@ -403,6 +405,61 @@ def comments_by_post():
     return jsonify({
         'ok': True,
         'comments': mapped
+    })
+
+
+@app.route('/subscribe')
+def subscribe():
+    query_args = request.args
+
+    if 'blogger_id' not in query_args:
+        return jsonify({
+            'ok': False,
+            'error_code': 5,
+            'error_desc': 'You must pass blogger_id'
+        })
+
+    blogger_id = query_args['blogger_id']
+    store.get_session().add(Subscription(g.me.id, blogger_id))
+
+    return jsonify({
+        'ok': True
+    })
+
+@app.route('/mySubscriptionsPosts')
+def subs_posts():
+    session = store.get_session()
+    my_subs = session.query(Subscription).filter(Subscription.subscriber_id == g.me.id).all()
+    my_subs_posts = []
+
+    for my_sub in my_subs:
+        cur_sub_posts = session.query(Post).filter(Post.author_id == my_sub.blogger_id).all()
+        my_subs_posts += cur_sub_posts
+
+    mapped = []
+    for post in my_subs_posts:
+        post: Post
+        topic = session.query(Topic).filter(Topic.id == post.topic_id).first()
+        author = session.query(Investor).filter(
+            Investor.id == post.author_id).first()
+        mapped.append({
+            'id': post.id,
+            'topic': {
+                'id': topic.id,
+                'title': topic.title
+            },
+            'author': {
+                'id': author.id,
+                'nickname': author.nickname,
+                'avatar_link': author.avatar_link
+            },
+            'text': post.text,
+            'timestamp': post.timestamp
+        })
+        
+    return jsonify({
+        'ok': True,
+        'posts': mapped
     })
 
 

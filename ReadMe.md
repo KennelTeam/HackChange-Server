@@ -7,7 +7,7 @@
 Если не ок, возвращается error_code и error_desc(Описание ошибки) 
 
 ## Список методов
-| Метод      | Параметры | Ответ |
+| Метод | Параметры | Ответ |
 | --- | --- | --- |
 | register | login, password | user_id, access_token |
 | login | login, password | user_id, access_token |
@@ -21,3 +21,5 @@
 | addPost | topic_id, text(контент) | -- |
 | addComment | post_id, text | -- |
 | commentsByPost | post_id | comments[timestamp, commenter (id, nickname, avatar_link), text] |
+| subscribe | blogger_id | -- |
+| mySubscriptionsPosts | -- | posts[id, timestamp, author(id, nickname, avatar_link), topic(id, title), text] |

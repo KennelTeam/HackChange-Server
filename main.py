@@ -131,7 +131,7 @@ def user_profile():
         return jsonify({
             'ok': False,
             'error_code': 5,
-            'error_desc': 'Requested user_id is not specified'
+            'error_desc': 'You must specify user_id'
         })
 
     profile_id = query_args['user_id']
@@ -209,10 +209,10 @@ def get_post():
 
     return jsonify({
         'ok': True,
-        'id': post_id,
+        'post_id': post_id,
         'timestamp': post.timestamp,
         'topic': {
-            'id': topic.id,
+            'topic_id': topic.id,
             'title': topic.title
         },
         'author': {
@@ -229,7 +229,7 @@ def all_instruments():
     instruments = store.get_session().query(Instrument).all()
 
     mapped = list(map(lambda instr: {
-        'id': instr.id,
+        'instrument_id': instr.id,
         'name': instr.name,
         'details': instr.details
     }, instruments))
@@ -285,7 +285,7 @@ def topics_by_instrument():
     topics = store.get_session().query(Topic).filter(
         Topic.instrument_id == instrument_id).all()
     mapped = list(map(lambda topic: {
-        'id': topic.id,
+        'topic_id': topic.id,
         'title': topic.title
     }, topics))
 
@@ -317,9 +317,9 @@ def posts_by_topic():
         author = session.query(Investor).filter(
             Investor.id == post.author_id).first()
         mapped.append({
-            'id': post.id,
+            'post_id': post.id,
             'topic': {
-                'id': topic.id,
+                'topic_id': topic.id,
                 'title': topic.title
             },
             'author': {
@@ -402,7 +402,7 @@ def comments_by_post():
             Investor.id == comment.commenter_id).first()
         mapped.append({
             'commenter': {
-                'id': commenter.id,
+                'user_id': commenter.id,
                 'nickname': commenter.nickname,
                 'avatar_link': commenter.avatar_link
             },
@@ -454,9 +454,9 @@ def subs_posts():
         author = session.query(Investor).filter(
             Investor.id == post.author_id).first()
         mapped.append({
-            'id': post.id,
+            'post_id': post.id,
             'topic': {
-                'id': topic.id,
+                'topic_id': topic.id,
                 'title': topic.title
             },
             'author': {

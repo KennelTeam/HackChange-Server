@@ -13,16 +13,16 @@
 | --- | --- | --- |
 | register | nickname, password | user_id, access_token |
 | login | nickname, password | user_id, access_token |
-| getProfile | profile_id | info(user_id, nickname, avatar_link), посты user'а[post_id] |
+| getProfile | user_id | info(user_id, nickname, avatar_link), посты user'а[post_id] |
 | setMyInfo | nickname or/and avatar_link(ссылка полученная от сервера после загрузки аватара) | -- |
-| getPost | post_id | id, timestamp, topic(id, title), author(id, nickname, avatar_link), text(контент) |
-| allInstruments | -- | instruments[id, name(короткое название), details(описание)] |
+| getPost | post_id | post_id, timestamp, topic(topic_id, title), author(user_id, nickname, avatar_link), text(контент) |
+| allInstruments | -- | instruments[instrument_id, name(короткое название), details(описание)] |
 | addTopic | instrument_id, title(название) | -- |
-| topicsByInstrument | instrument_id | topics[id, title(название)] |
-| postsByTopic | topic_id | posts[id, timestamp, author(id, nickname, avatar_link), topic(id, title), text] |
+| topicsByInstrument | instrument_id | topics[topic_id, title(название)] |
+| postsByTopic | topic_id | posts[post_id, timestamp, author(user_id, nickname, avatar_link), topic(topic_id, title), text] |
 | addPost | topic_id, text(контент) | -- |
 | addComment | post_id, text | -- |
-| commentsByPost | post_id | comments[timestamp, commenter (id, nickname, avatar_link), text] |
-| subscribe | blogger_id | -- |
-| mySubscriptionsPosts| -- | posts[id, timestamp, author(id, nickname, avatar_link), topic(id, title), text] |
-| subscribersCount | blogger_id | subs_count(Количество подписчиков) |
+| commentsByPost | post_id | comments[timestamp, commenter (user_id, nickname, avatar_link), text] |
+| subscribe | user_id | -- |
+| mySubscriptionsPosts| -- | posts[post_id, timestamp, author(user_id, nickname, avatar_link), topic(topic_id, title), text] |
+| subscribersCount | user__id | subs_count(Количество подписчиков) |

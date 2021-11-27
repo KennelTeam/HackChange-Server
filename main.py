@@ -11,9 +11,6 @@ from tokens import generate_access_token
 
 import store
 
-
-GOOGLE_CLIENT_ID = '452745278337-csmmksfrl50qq33j37r2rg9900v245k5.apps.googleusercontent.com'
-
 app = flask.Flask(__name__)
 app.config['DEBUG'] = True
 
@@ -56,55 +53,74 @@ def save_db(response):
     return response
 
 
-def verify_google_token(token: str) -> str:
-    google_id_info = {}
-
-    try:
-        google_id_info = id_token.verify_oauth2_token(
-            token, google_requests.Request(), GOOGLE_CLIENT_ID)
-    except Exception as e:
-        return None
-
-    return str(google_id_info['sub'])
-
-
-def dummy_google_token(token: str) -> str:
-    return random.choice(['115989421480695081793'])
-
-
-@app.route('/authent')
-def authent():
+@app.route('/register')
+def register():
     query_args = request.args
-    if 'google_token' not in query_args:
+    if 'nickname' not in query_args or 'password' not in query_args:
+        return jsonify({
+            'ok': False,
+            'error_code': 5,
+            'error_desc': 'You must pass nickname and password'
+        })
+
+    nickname = query_args['nickname']
+    password = query_args['password']
+
+    db = store.get_session()
+    if db.query(store.Investor).filter(Investor.nickname == nickname).first() is not None:
         return jsonify({
             'ok': False,
             'error_code': 4,
-            'error_desc': 'No google token passed'
+            'error_desc': 'User with this nickname already exists'
         })
-    investor_id = dummy_google_token(query_args['google_token'])
 
-    if investor_id is None:
+    new_investor = Investor(nickname, password, generate_access_token())
+    db.add(new_investor)
+
+    response = jsonify({
+        'ok': True,
+        'user_id': new_investor.id,
+        'access_token': new_investor.access_token
+    })
+
+    return response
+
+
+@app.route('/login')
+def login():
+    query_args = request.args
+    if 'nickname' not in query_args or 'password' not in query_args:
+        return jsonify({
+            'ok': False,
+            'error_code': 5,
+            'error_desc': 'You must pass nickname and password'
+        })
+
+    nickname = query_args['nickname']
+    password = query_args['password']
+
+    db = store.get_session()
+    investor = db.query(store.Investor).filter(
+        Investor.nickname == nickname).first()
+    if investor is None:
+        return jsonify({
+            'ok': False,
+            'error_code': 0,
+            'error_desc': 'No user with this nickname'
+        })
+
+    if investor.password != password:
         return jsonify({
             'ok': False,
             'error_code': 1,
-            'error_desc': 'Incorrect google token'
+            'error_desc': 'Incorrect password'
         })
 
-    db = store.get_session()
-    investor = db.query(store.Investor).filter_by(
-        google_user_id=investor_id).first()
-
-    if investor is None:
-        investor = store.Investor(investor_id, generate_access_token())
-        db.add(investor)
-
-    response = jsonify({
+    return jsonify({
         'ok': True,
         'user_id': investor.id,
         'access_token': investor.access_token
     })
-
-    return response
 
 
 @app.route('/getProfile')
@@ -176,11 +192,23 @@ def get_post():
 
     post_id = query_args['post_id']
 
-    post = store.get_session().query(Post).filter(Post.id == post_id).first()
+    session = store.get_session()
+    post = session.query(Post).filter(Post.id == post_id).first()
+    topic = session.query(Topic).filter(Topic.id == post.topic_id).first()
+    author = session.query(Investor).filter(
+        Investor.id == post.author_id).first()
+
     return jsonify({
         'ok': True,
-        'instrument_id': post.topic_id,
-        'author_id': post.author_id,
+        'topic': {
+            'id': topic.id,
+            'title': topic.title
+        },
+        'author': {
+            'id': author.id,
+            'nickname': author.nickname,
+            'avatar_link': author.avatar_link
+        },
         'text': post.text
     })
 
@@ -266,14 +294,26 @@ def posts_by_topic():
 
     topic_id = query_args['topic_id']
 
-    posts = store.get_session().query(Post).filter(
-        Post.topic_id == topic_id).all()
-    mapped = list(map(lambda post: {
-        'topic_id': post.topic_id,
-        'author_id': post.author_id,
-        'text': post.text,
-        'timestamp': post.timestamp
-    }, posts))
+    session = store.get_session()
+    posts = session.query(Post).filter(Post.topic_id == topic_id).all()
+    
+    mapped = []
+    for post in posts:
+        topic = session.query(Topic).filter(Topic.id == post.topic_id).first()
+        author = session.query(Investor).filter(Investor.id == post.author_id).first()
+        mapped.append({
+            'topic': {
+                'id': topic.id,
+                'title': topic.title
+            },
+            'author': {
+                'id': author.id,
+                'nickname': author.nickname,
+                'avatar_link': author.avatar_link
+            },
+            'text': post.text,
+            'timestamp': post.timestamp
+        })
 
     return jsonify({
         'ok': True,
@@ -301,6 +341,7 @@ def add_post():
         'ok': True
     })
 
+
 @app.route('/addComment')
 def add_comment():
     query_args = request.args
@@ -321,6 +362,7 @@ def add_comment():
         'ok': True
     })
 
+
 @app.route('/commentsByPost')
 def comments_by_post():
     query_args = request.args
@@ -334,17 +376,28 @@ def comments_by_post():
 
     post_id = query_args['post_id']
 
-    comments = store.get_session().query(Comment).filter(Comment.post_id == post_id).all()
-    mapped = list(map(lambda comm: {
-        'commenter_id': comm.commenter_id,
-        'text': comm.text,
-        'timestamp': comm.timestamp
-    }, comments))
+    session = store.get_session()
+    comments = session.query(
+        Comment).filter(Comment.post_id == post_id).all()
+
+    mapped = []
+    for comment in comments:
+        commenter = session.query(Investor).filter(Investor.id == comment.commenter_id).first()
+        mapped.append({
+            'commenter': {
+                'id': commenter.id,
+                'nickname': commenter.nickname,
+                'avatar_link': commenter.avatar_link
+            },
+            'text': comment.text,
+            'timestamp': comment.timestamp
+        })
 
     return jsonify({
         'ok': True,
         'comments': mapped
     })
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

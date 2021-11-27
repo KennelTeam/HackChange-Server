@@ -9,16 +9,18 @@ class Investor(Base):
     __tablename__ = 'investors'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    google_user_id = Column(String(32))
     access_token = Column(String(64))
 
     nickname = Column(String(16))
+    password = Column(String(32))
+
     avatar_link = Column(String(100))
 
-    def __init__(self, google_user_id: int, access_token: str) -> None:
+    def __init__(self, nickname: str, password: str, access_token: str) -> None:
         super().__init__()
-        self.google_user_id = google_user_id
-        self.access_token = access_token
+        self.nickname = nickname
+        self.password = password
+        self.access_token =access_token
 
 
 class Instrument(Base):

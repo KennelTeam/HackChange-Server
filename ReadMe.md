@@ -1,22 +1,22 @@
 # API
 
-В каждом запросе есть параметр ok (True / False)
+В каждом запросе есть параметр ok(True / False)
 
 Если ок, см. возвращаемые поля в таблице методов
 
-Если не ок, возвращается error_code и error_desc (Описание ошибки) 
+Если не ок, возвращается error_code и error_desc(Описание ошибки) 
 
 ## Список методов
 | Метод      | Параметры | Ответ |
 | --- | --- | --- |
 | authent | login, password | user_id, access_token |
-| getProfile | profile_id | info (nickname, avatar_link), посты user'а [post_id] |
-| setMyInfo | nickname or/and avatar_link (ссылка полученная от сервера после загрузки аватара) | -- |
-| getPost | post_id | instrument_id, autor_id, text (контент) |
-| allInstruments | -- | массив [id, name (короткое название), details (описание)] |
-| addTopic | instrument_id, title (название) | -- |
-| topicsByInstrument | instrument_id | topics[id, title (название)] |
-| postsByTopic | topic_id | posts[timestamp, author_id, text] |
-| addPost | topic_id, text (контент) | -- |
+| getProfile | profile_id | info(nickname, avatar_link), посты user'а[post_id] |
+| setMyInfo | nickname or/and avatar_link(ссылка полученная от сервера после загрузки аватара) | -- |
+| getPost | post_id | topic(id, title), autor(id, nickname, avatar_link), text(контент) |
+| allInstruments | -- | массив[id, name(короткое название), details(описание)] |
+| addTopic | instrument_id, title(название) | -- |
+| topicsByInstrument | instrument_id | topics[id, title(название)] |
+| postsByTopic | topic_id | posts[timestamp, author(id, nickname, avatar_link), topic(id, title), text] |
+| addPost | topic_id, text(контент) | -- |
 | addComment | post_id, text | -- |
-| commentsByPost | post_id | comments[timestamp, commenter_id, text] |
+| commentsByPost | post_id | comments[timestamp, commenter (id, nickname, avatar_link), text] |

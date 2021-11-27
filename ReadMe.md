@@ -9,7 +9,8 @@
 ## Список методов
 | Метод      | Параметры | Ответ |
 | --- | --- | --- |
-| authent | login, password | user_id, access_token |
+| register | login, password | user_id, access_token |
+| login | login, password | user_id, access_token |
 | getProfile | profile_id | info(nickname, avatar_link), посты user'а[post_id] |
 | setMyInfo | nickname or/and avatar_link(ссылка полученная от сервера после загрузки аватара) | -- |
 | getPost | post_id | topic(id, title), autor(id, nickname, avatar_link), text(контент) |

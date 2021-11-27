@@ -1,6 +1,6 @@
 import random
 
-def generate_access_token(length: int = 32):
+def generate_access_token(length: int = 64):
     res = ''
     n_a = ord('a')
     n_z = ord('z')

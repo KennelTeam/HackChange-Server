@@ -8,8 +8,7 @@ _SessionsManager: scoped_session = None
 
 
 def _init_operating():
-    user, pwd, host, port, dbname = input(
-        'Enter database credentials:').split()
+    user, pwd, host, port, dbname = 'admin Doge7891 hack-change.cnrri9sfbvjr.eu-west-2.rds.amazonaws.com 3306 develop_db'.split()
 
     engine = create_engine(f'mysql://{user}:{pwd}@{host}:{port}/{dbname}')
     Base.metadata.create_all(engine)
@@ -24,6 +23,13 @@ def _init_operating():
 def get_session() -> Session:
     return _SessionsManager()
 
+def commit():
+    _SessionsManager().commit()
 
 def clear_session():
     _SessionsManager.remove()
+
+#115989421480695081792
+#115989421480695081792
+
+#103924233492969609294

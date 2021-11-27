@@ -17,7 +17,7 @@
 | allInstruments | -- | instruments[id, name(короткое название), details(описание)] |
 | addTopic | instrument_id, title(название) | -- |
 | topicsByInstrument | instrument_id | topics[id, title(название)] |
-| postsByTopic | topic_id | posts[timestamp, author(id, nickname, avatar_link), topic(id, title), text] |
+| postsByTopic | topic_id | posts[id, timestamp, author(id, nickname, avatar_link), topic(id, title), text] |
 | addPost | topic_id, text(контент) | -- |
 | addComment | post_id, text | -- |
 | commentsByPost | post_id | comments[timestamp, commenter (id, nickname, avatar_link), text] |

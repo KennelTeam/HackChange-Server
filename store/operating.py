@@ -8,8 +8,9 @@ _SessionsManager: scoped_session = None
 
 
 def _init_operating():
-    user, pwd, host, port, dbname = 'admin Doge7891 hack-change.cnrri9sfbvjr.eu-west-2.rds.amazonaws.com 3306 develop_db'.split()
-
+    with open('dbconfig.conf') as f:
+        user, pwd, host, port, dbname = f.readline().split()
+    
     engine = create_engine(f'mysql://{user}:{pwd}@{host}:{port}/{dbname}')
     Base.metadata.create_all(engine)
 

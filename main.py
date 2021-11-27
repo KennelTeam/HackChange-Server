@@ -18,8 +18,6 @@ app = flask.Flask(__name__)
 app.config['DEBUG'] = True
 
 
-
-
 def investor_by_token(token: str) -> bool:
     session = store.get_session()
     investor = session.query(store.Investor).filter(
@@ -199,6 +197,7 @@ def all_instruments():
 
     return jsonify(mapped)
 
+
 @app.route('/addTopic')
 def add_topic():
     query_args = request.args
@@ -220,12 +219,13 @@ def add_topic():
             'error_code': 6,
             'error_desc': 'Instruments with such id doesn\'t exist'
         })
-    
+
     session.add(Topic(instrument_id, title))
 
     return jsonify({
         'ok': True
     })
+
 
 @app.route('/topicsByInstrument')
 def topics_by_instrument():
@@ -240,7 +240,8 @@ def topics_by_instrument():
 
     instrument_id = query_args['instrument_id']
 
-    topics = store.get_session().query(Topic).filter(Topic.instrument_id == instrument_id).all()
+    topics = store.get_session().query(Topic).filter(
+        Topic.instrument_id == instrument_id).all()
     mapped = list(map(lambda topic: {
         'id': topic.id,
         'title': topic.title
@@ -250,6 +251,7 @@ def topics_by_instrument():
         'ok': True,
         'topics': mapped
     })
+
 
 @app.route('/postsByTopic')
 def posts_by_topic():
@@ -277,6 +279,7 @@ def posts_by_topic():
         'posts': mapped
     })
 
+
 @app.route('/addPost')
 def add_post():
     query_args = request.args
@@ -297,4 +300,6 @@ def add_post():
         'ok': True
     })
 
-app.run(host='0.0.0.0', port=8080)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)

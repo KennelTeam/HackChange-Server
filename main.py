@@ -308,6 +308,7 @@ def posts_by_topic():
         topic = session.query(Topic).filter(Topic.id == post.topic_id).first()
         author = session.query(Investor).filter(Investor.id == post.author_id).first()
         mapped.append({
+            'id': post.id,
             'topic': {
                 'id': topic.id,
                 'title': topic.title

@@ -10,11 +10,13 @@
 | Метод      | Параметры | Ответ |
 | --- | --- | --- |
 | authent | login, password | user_id, access_token |
-| getProfile | profile_id | info (nickname, avatar_link), посты user'а [instrument_id, author_id, text] |
+| getProfile | profile_id | info (nickname, avatar_link), посты user'а [post_id] |
 | setMyInfo | nickname or/and avatar_link (ссылка полученная от сервера после загрузки аватара) | -- |
 | getPost | post_id | instrument_id, autor_id, text (контент) |
 | allInstruments | -- | массив [id, name (короткое название), details (описание)] |
 | addTopic | instrument_id, title (название) | -- |
 | topicsByInstrument | instrument_id | topics[id, title (название)] |
-| postsByTopic | topic_id | posts[instrument_id, author_id, text] |
+| postsByTopic | topic_id | posts[timestamp, author_id, text] |
 | addPost | topic_id, text (контент) | -- |
+| addComment | post_id, text | -- |
+| commentsByPost | post_id | comments[timestamp, commenter_id, text] |

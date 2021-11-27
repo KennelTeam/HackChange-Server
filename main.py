@@ -6,7 +6,7 @@ from flask import request, jsonify
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 from sqlalchemy.sql.functions import user
-from store.images import Instrument, Investor, Post, Topic
+from store.images import Comment, Instrument, Investor, Post, Topic
 from tokens import generate_access_token
 
 import store
@@ -269,9 +269,10 @@ def posts_by_topic():
     posts = store.get_session().query(Post).filter(
         Post.topic_id == topic_id).all()
     mapped = list(map(lambda post: {
-        'instrument_id': post.topic_id,
+        'topic_id': post.topic_id,
         'author_id': post.author_id,
-        'text': post.text
+        'text': post.text,
+        'timestamp': post.timestamp
     }, posts))
 
     return jsonify({
@@ -300,6 +301,50 @@ def add_post():
         'ok': True
     })
 
+@app.route('/addComment')
+def add_comment():
+    query_args = request.args
+
+    if 'post_id' or 'text' not in query_args:
+        return jsonify({
+            'ok': False,
+            'error_code': 5,
+            'error_desc': 'You must pass post_id and text'
+        })
+
+    post_id = query_args['post_id']
+    text = query_args['text']
+
+    store.get_session().add(Comment(post_id, g.me.id, text))
+
+    return jsonify({
+        'ok': True
+    })
+
+@app.route('/commentsByPost')
+def comments_by_post():
+    query_args = request.args
+
+    if 'post_id' not in query_args:
+        return jsonify({
+            'ok': False,
+            'error_code': 5,
+            'error_desc': 'You must pass post_id'
+        })
+
+    post_id = query_args['post_id']
+
+    comments = store.get_session().query(Comment).filter(Comment.post_id == post_id).all()
+    mapped = list(map(lambda comm: {
+        'commenter_id': comm.commenter_id,
+        'text': comm.text,
+        'timestamp': comm.timestamp
+    }, comments))
+
+    return jsonify({
+        'ok': True,
+        'comments': mapped
+    })
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

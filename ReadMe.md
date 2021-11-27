@@ -22,4 +22,5 @@
 | addComment | post_id, text | -- |
 | commentsByPost | post_id | comments[timestamp, commenter (id, nickname, avatar_link), text] |
 | subscribe | blogger_id | -- |
-| mySubscriptionsPosts | -- | posts[id, timestamp, author(id, nickname, avatar_link), topic(id, title), text] |
+| mySubscriptionsPosts| -- | posts[id, timestamp, author(id, nickname, avatar_link), topic(id, title), text] |
+| subscribersCount | blogger_id | subs_count(Количество подписчиков) |

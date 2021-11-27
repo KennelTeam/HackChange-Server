@@ -26,7 +26,7 @@ def investor_by_token(token: str) -> bool:
 @app.before_request
 def access_token_checker():
     query_args = request.args
-    if request.endpoint != 'authent':
+    if request.endpoint != 'login' and request.endpoint != 'register':
         if 'access_token' not in query_args:
             return jsonify({
                 'ok': False,
@@ -456,12 +456,31 @@ def subs_posts():
             'text': post.text,
             'timestamp': post.timestamp
         })
-        
+
     return jsonify({
         'ok': True,
         'posts': mapped
     })
 
+@app.route('/subscribersCount')
+def subs_count():
+    query_args = request.args
+
+    if 'blogger_id' not in query_args:
+        return jsonify({
+            'ok': False,
+            'error_code': 5,
+            'error_desc': 'You must pass blogger_id'
+        })
+
+    blogger_id = query_args['blogger_id']
+
+    all_subs = store.get_session().query(Subscription).filter(Subscription.blogger_id == blogger_id).all()
+
+    return jsonify({
+        'ok': True,
+        'subs_count': len(all_subs)
+    })
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

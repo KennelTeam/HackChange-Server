@@ -156,6 +156,7 @@ def user_profile():
 
     return jsonify({
         'ok': True,
+        'id': profile_id,
         'info': {
             'nickname': req_investor.nickname,
             'avatar_link': req_investor.avatar_link
@@ -200,6 +201,8 @@ def get_post():
 
     return jsonify({
         'ok': True,
+        'id': post_id,
+        'timestamp': post.timestamp,
         'topic': {
             'id': topic.id,
             'title': topic.title
@@ -223,7 +226,10 @@ def all_instruments():
         'details': instr.details
     }, instruments))
 
-    return jsonify(mapped)
+    return jsonify({
+        'ok': True,
+        'instruments': mapped
+    })
 
 
 @app.route('/addTopic')

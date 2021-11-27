@@ -3,8 +3,6 @@ import flask
 from flask import g
 from flask import request, jsonify
 
-from google.oauth2 import id_token
-from google.auth.transport import requests as google_requests
 from sqlalchemy.sql.functions import user
 from store.images import Comment, Instrument, Investor, Post, Subscription, Topic
 from tokens import generate_access_token
@@ -125,17 +123,18 @@ def login():
     })
 
 
+
 @app.route('/getProfile')
 def user_profile():
     query_args = request.args
-    if 'profile_id' not in query_args:
+    if 'user_id' not in query_args:
         return jsonify({
             'ok': False,
             'error_code': 5,
-            'error_desc': 'Requested profile id is not specified'
+            'error_desc': 'Requested user_id is not specified'
         })
 
-    profile_id = query_args['profile_id']
+    profile_id = query_args['user_id']
 
     session = store.get_session()
     req_investor = session.query(Investor).filter(
@@ -158,8 +157,8 @@ def user_profile():
 
     return jsonify({
         'ok': True,
-        'id': profile_id,
         'info': {
+            'user_id': profile_id,
             'nickname': req_investor.nickname,
             'avatar_link': req_investor.avatar_link
         },
@@ -217,7 +216,7 @@ def get_post():
             'title': topic.title
         },
         'author': {
-            'id': author.id,
+            'user_id': author.id,
             'nickname': author.nickname,
             'avatar_link': author.avatar_link
         },
@@ -324,7 +323,7 @@ def posts_by_topic():
                 'title': topic.title
             },
             'author': {
-                'id': author.id,
+                'user_id': author.id,
                 'nickname': author.nickname,
                 'avatar_link': author.avatar_link
             },
@@ -421,14 +420,14 @@ def comments_by_post():
 def subscribe():
     query_args = request.args
 
-    if 'blogger_id' not in query_args:
+    if 'user_id' not in query_args:
         return jsonify({
             'ok': False,
             'error_code': 5,
-            'error_desc': 'You must pass blogger_id'
+            'error_desc': 'You must pass user_id'
         })
 
-    blogger_id = query_args['blogger_id']
+    blogger_id = query_args['user_id']
     store.get_session().add(Subscription(g.me.id, blogger_id))
 
     return jsonify({
@@ -461,7 +460,7 @@ def subs_posts():
                 'title': topic.title
             },
             'author': {
-                'id': author.id,
+                'user_id': author.id,
                 'nickname': author.nickname,
                 'avatar_link': author.avatar_link
             },
@@ -479,14 +478,14 @@ def subs_posts():
 def subs_count():
     query_args = request.args
 
-    if 'blogger_id' not in query_args:
+    if 'user_id' not in query_args:
         return jsonify({
             'ok': False,
             'error_code': 5,
-            'error_desc': 'You must pass blogger_id'
+            'error_desc': 'You must pass user_id'
         })
 
-    blogger_id = query_args['blogger_id']
+    blogger_id = query_args['user_id']
 
     all_subs = store.get_session().query(Subscription).filter(
         Subscription.blogger_id == blogger_id).all()

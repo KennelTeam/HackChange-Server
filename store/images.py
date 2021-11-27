@@ -11,7 +11,7 @@ class Investor(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     access_token = Column(String(64))
 
-    nickname = Column(String(16))
+    nickname = Column(String(32))
     password = Column(String(32))
 
     avatar_link = Column(String(100))

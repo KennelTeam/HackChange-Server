@@ -67,7 +67,7 @@ def register():
     password = query_args['password']
 
     db = store.get_session()
-    if db.query(store.Investor).filter(Investor.nickname == nickname).first() is not None:
+    if db.query(Investor).filter(Investor.nickname == nickname).first() is not None:
         return jsonify({
             'ok': False,
             'error_code': 4,
@@ -76,7 +76,8 @@ def register():
 
     new_investor = Investor(nickname, password, generate_access_token())
     db.add(new_investor)
-    db.commit()
+    new_investor = db.query(Investor).filter(
+        Investor.nickname == nickname).first()
 
     response = jsonify({
         'ok': True,
@@ -172,6 +173,13 @@ def set_my_info():
     investor: Investor = g.me
 
     if 'nickname' in query_args:
+        nickname = query_args['nickname']
+        if store.get_session().query(store.Investor).filter(Investor.nickname == nickname).first() is not None:
+            return jsonify({
+                'ok': False,
+                'error_code': 7,
+                'error_desc': 'This nickname is already taken'
+            })
         investor.nickname = query_args['nickname']
 
     if 'avatar_link' in query_args:
@@ -427,14 +435,17 @@ def subscribe():
         'ok': True
     })
 
+
 @app.route('/mySubscriptionsPosts')
 def subs_posts():
     session = store.get_session()
-    my_subs = session.query(Subscription).filter(Subscription.subscriber_id == g.me.id).all()
+    my_subs = session.query(Subscription).filter(
+        Subscription.subscriber_id == g.me.id).all()
     my_subs_posts = []
 
     for my_sub in my_subs:
-        cur_sub_posts = session.query(Post).filter(Post.author_id == my_sub.blogger_id).all()
+        cur_sub_posts = session.query(Post).filter(
+            Post.author_id == my_sub.blogger_id).all()
         my_subs_posts += cur_sub_posts
 
     mapped = []
@@ -463,6 +474,7 @@ def subs_posts():
         'posts': mapped
     })
 
+
 @app.route('/subscribersCount')
 def subs_count():
     query_args = request.args
@@ -476,12 +488,14 @@ def subs_count():
 
     blogger_id = query_args['blogger_id']
 
-    all_subs = store.get_session().query(Subscription).filter(Subscription.blogger_id == blogger_id).all()
+    all_subs = store.get_session().query(Subscription).filter(
+        Subscription.blogger_id == blogger_id).all()
 
     return jsonify({
         'ok': True,
         'subs_count': len(all_subs)
     })
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

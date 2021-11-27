@@ -13,7 +13,7 @@
 | --- | --- | --- |
 | register | nickname, password | user_id, access_token |
 | login | nickname, password | user_id, access_token |
-| getProfile | profile_id | info(id, nickname, avatar_link), посты user'а[post_id] |
+| getProfile | profile_id | info(user_id, nickname, avatar_link), посты user'а[post_id] |
 | setMyInfo | nickname or/and avatar_link(ссылка полученная от сервера после загрузки аватара) | -- |
 | getPost | post_id | id, timestamp, topic(id, title), author(id, nickname, avatar_link), text(контент) |
 | allInstruments | -- | instruments[id, name(короткое название), details(описание)] |

@@ -76,6 +76,7 @@ def register():
 
     new_investor = Investor(nickname, password, generate_access_token())
     db.add(new_investor)
+    db.commit()
 
     response = jsonify({
         'ok': True,

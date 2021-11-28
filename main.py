@@ -214,8 +214,15 @@ def user_profile():
     posts_ids = list(map(lambda post: post.id, session.query(
         Post).filter(Post.author_id == profile_id)))
 
+    subs_of_profile = session.query(Subscription).filter(
+        Subscription.blogger_id == req_investor.id)
+    
+    am_i_subscribed = subs_of_profile.filter(Subscription.subscriber_id == g.me.id).first() is not None
+
     return jsonify({
         'ok': True,
+        'am_i_subscribed': am_i_subscribed,
+        'subscribers_count': len(subs_of_profile.all()),
         'info': {
             'user_id': profile_id,
             'nickname': req_investor.nickname,

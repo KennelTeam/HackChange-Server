@@ -15,17 +15,17 @@
 | login | nickname, password | user_id, access_token |
 | getProfile | user_id | am_i_subscribed, subscribers_count(Количество подписчиков на этой странице) info(user_id, nickname), посты user'а[post_id] |
 | setMyInfo | nickname | -- |
-| getPost | post_id | post_id, timestamp, topic(topic_id, title), author(user_id, nickname), text(контент) |
+| getPost | post_id | post_id, votes_count, timestamp, topic(topic_id, title), author(user_id, nickname), text(контент) |
 | allInstruments | -- | instruments[instrument_id, name(короткое название), details(описание)] |
 | addTopic | instrument_id, title(название) | -- |
 | topicsByInstrument | instrument_id | topics[topic_id, title(название)] |
-| postsByTopic | topic_id | posts[post_id, timestamp, author(user_id, nickname), topic(topic_id, title), text] |
+| postsByTopic | topic_id | posts[votes_count, post_id, timestamp, author(user_id, nickname), topic(topic_id, title), text] |
 | addPost | topic_id, text(контент) | -- |
 | addComment | post_id, text | -- |
 | commentsByPost | post_id | comments[comment_id, timestamp, commenter (user_id, nickname), text] |
 | subscribe | user_id | -- |
 | unsubscribe | user_id | -- |
-| mySubscriptionsPosts| -- | posts[post_id, timestamp, author(user_id, nickname), topic(topic_id, title), text] |
+| mySubscriptionsPosts| -- | posts[votes_count, post_id, timestamp, author(user_id, nickname), topic(topic_id, title), text] |
 | subscribersCount | user_id | subs_count(Количество подписчиков) |
 | uploadAvatar | file(Изображение побайтовое. JPG или PNG) | -- |
 | getAvatar | user_id | avatar (единственный результат, без поля 'ok'!) |

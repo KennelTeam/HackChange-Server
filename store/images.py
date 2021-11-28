@@ -62,6 +62,20 @@ class Post(Base):
         self.text = text
 
 
+class PostVoting(Base):
+    __tablename__ = 'postsvotings'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    post_id = Column(Integer)
+    investor_id = Column(Integer)
+    up_voted = Column(Boolean)
+
+    def __init__(self, post_id: int, investor_id: int, up_voted: bool) -> None:
+        super().__init__()
+        self.post_id = post_id
+        self.investor_id = investor_id
+        self.up_voted = up_voted
+
 class Subscription(Base):
     __tablename__ = 'subscriptions'
 

@@ -362,7 +362,7 @@ def add_post():
 def add_comment():
     query_args = request.args
 
-    if 'post_id' or 'text' not in query_args:
+    if 'post_id' not in query_args or 'text' not in query_args:
         return jsonify({
             'ok': False,
             'error_code': 5,

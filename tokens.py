@@ -1,7 +1,7 @@
 import random
 
 def generate_access_token(user_id: int, length: int = 32):
-    res = str(user_id) + '.'
+    res = str(user_id)
     n_a = ord('a')
     n_z = ord('z')
     n_A = ord('A')
@@ -16,7 +16,7 @@ def generate_access_token(user_id: int, length: int = 32):
     return res
 
 def generate_avatar_id(user_id: int, length: int = 16):
-    res = str(user_id) + '.'
+    res = str(user_id)
     n_a = ord('a')
     n_z = ord('z')
     n_A = ord('A')

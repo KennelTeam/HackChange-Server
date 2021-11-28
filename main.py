@@ -52,7 +52,7 @@ def access_token_checker():
 
 @app.after_request
 def save_db(response):
-    print(response.json())
+    print(response.get_data())
     store.commit()
     store.clear_session()
     return response

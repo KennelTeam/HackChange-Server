@@ -13,7 +13,7 @@
 | --- | --- | --- |
 | register | nickname, password | user_id, access_token |
 | login | nickname, password | user_id, access_token |
-| getProfile | user_id | am_i_subscribed, info(user_id, nickname), посты user'а[post_id] |
+| getProfile | user_id | am_i_subscribed, subscribers_count(Количество подписчиков на этой странице) info(user_id, nickname), посты user'а[post_id] |
 | setMyInfo | nickname | -- |
 | getPost | post_id | post_id, timestamp, topic(topic_id, title), author(user_id, nickname), text(контент) |
 | allInstruments | -- | instruments[instrument_id, name(короткое название), details(описание)] |

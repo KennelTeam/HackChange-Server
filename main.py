@@ -406,6 +406,7 @@ def comments_by_post():
                 'nickname': commenter.nickname,
                 'avatar_link': commenter.avatar_link
             },
+            'comment_id': comment.id,
             'text': comment.text,
             'timestamp': comment.timestamp
         })

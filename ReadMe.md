@@ -22,7 +22,7 @@
 | postsByTopic | topic_id | posts[post_id, timestamp, author(user_id, nickname, avatar_link), topic(topic_id, title), text] |
 | addPost | topic_id, text(контент) | -- |
 | addComment | post_id, text | -- |
-| commentsByPost | post_id | comments[timestamp, commenter (user_id, nickname, avatar_link), text] |
+| commentsByPost | post_id | comments[comment_id, timestamp, commenter (user_id, nickname, avatar_link), text] |
 | subscribe | user_id | -- |
 | mySubscriptionsPosts| -- | posts[post_id, timestamp, author(user_id, nickname, avatar_link), topic(topic_id, title), text] |
 | subscribersCount | user__id | subs_count(Количество подписчиков) |

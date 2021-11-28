@@ -123,7 +123,6 @@ def login():
     })
 
 
-
 @app.route('/getProfile')
 def user_profile():
     query_args = request.args
@@ -430,6 +429,28 @@ def subscribe():
 
     blogger_id = query_args['user_id']
     store.get_session().add(Subscription(g.me.id, blogger_id))
+
+    return jsonify({
+        'ok': True
+    })
+
+
+@app.route('/unsubscribe')
+def unsubscribe():
+    query_args = request.args
+
+    if 'user_id' not in query_args:
+        return jsonify({
+            'ok': False,
+            'error_code': 5,
+            'error_desc': 'You must pass user_id'
+        })
+
+    blogger_id = query_args['user_id']
+
+    session = store.get_session()
+    session.delete(session.query(Subscription).filter(
+        Subscription.subscriber_id == g.me.id and Subscription.blogger_id == blogger_id).first())
 
     return jsonify({
         'ok': True

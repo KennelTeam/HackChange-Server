@@ -85,6 +85,7 @@ def upload_file():
         'ok': True
     })
 
+
 @app.route('/getAvatar')
 def download_my_avatar():
     query_args = request.args
@@ -98,12 +99,19 @@ def download_my_avatar():
 
     user_id = query_args['user_id']
 
-    user = store.get_session().query(Investor).filter(Investor.id == user_id).first()
+    user: Investor = store.get_session().query(
+        Investor).filter(Investor.id == user_id).first()
     if user is None:
         return jsonify({
             'ok': False,
             'error_code': 10,
             'error_desc': 'User with requested id doesn not exist'
+        })
+    if not os.path.exists('avatars/' + user.avatar_link):
+        return jsonify({
+            'ok': False,
+            'error_code': 11,
+            'error_desc': 'This user has no avatar yet'
         })
 
     return send_from_directory(directory='avatars/', path=user.avatar_link)
@@ -216,8 +224,9 @@ def user_profile():
 
     subs_of_profile = session.query(Subscription).filter(
         Subscription.blogger_id == req_investor.id)
-    
-    am_i_subscribed = subs_of_profile.filter(Subscription.subscriber_id == g.me.id).first() is not None
+
+    am_i_subscribed = subs_of_profile.filter(
+        Subscription.subscriber_id == g.me.id).first() is not None
 
     return jsonify({
         'ok': True,
@@ -392,7 +401,6 @@ def posts_by_topic():
         votes_count = len(votes_all.filter(PostVoting.up_voted == True).all(
         )) - len(votes_all.filter(PostVoting.up_voted == False).all())
 
-
         mapped.append({
             'post_id': post.id,
             'votes_count': votes_count,
@@ -552,7 +560,8 @@ def subs_posts():
         topic = session.query(Topic).filter(Topic.id == post.topic_id).first()
         author = session.query(Investor).filter(
             Investor.id == post.author_id).first()
-        votes_all = session.query(PostVoting).filter(PostVoting.post_id == post.id)
+        votes_all = session.query(PostVoting).filter(
+            PostVoting.post_id == post.id)
         votes_count = len(votes_all.filter(PostVoting.up_voted == True).all(
         )) - len(votes_all.filter(PostVoting.up_voted == False).all())
         mapped.append({
@@ -597,6 +606,7 @@ def subs_count():
         'subs_count': len(all_subs)
     })
 
+
 def modify_votes(up_voted: bool):
     query_args = request.args
 
@@ -610,11 +620,12 @@ def modify_votes(up_voted: bool):
     post_id = query_args['post_id']
 
     store.get_session().add(PostVoting(post_id, g.me.id, up_voted))
-    
+
 
 @app.route('/upvotePost')
 def upvote_post():
     return modify_votes(True)
+
 
 @app.route('/downvotePost')
 def downvote_post():

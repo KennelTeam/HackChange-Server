@@ -14,15 +14,13 @@ class Investor(Base):
     nickname = Column(String(32))
     password = Column(String(32))
 
-    avatar_link = Column(String(100))
+    avatar_link = Column(String(64))
 
-    def __init__(self, nickname: str, password: str, access_token: str) -> None:
+    def __init__(self, nickname: str, password: str) -> None:
         super().__init__()
         self.nickname = nickname
         self.password = password
-        self.access_token =access_token
-
-
+        
 class Instrument(Base):
     __tablename__ = 'instruments'
 

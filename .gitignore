@@ -1,2 +1,5 @@
 dbconfig.conf
 *__pycache__/
+*.jpg
+*.png
+avatars_test.py

@@ -1,11 +1,17 @@
+
+import os
 import random
 import flask
 from flask import g
 from flask import request, jsonify
+from flask.helpers import flash, send_from_directory, url_for
 
 from sqlalchemy.sql.functions import user
+from werkzeug.datastructures import FileStorage
+from werkzeug.utils import redirect, send_file
 from store.images import Comment, Instrument, Investor, Post, Subscription, Topic
-from tokens import generate_access_token
+from tokens import generate_access_token, generate_avatar_id
+from PIL import Image
 
 import store
 
@@ -51,6 +57,58 @@ def save_db(response):
     return response
 
 
+@app.route('/uploadAvatar', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return jsonify({
+            'ok': False,
+            'error_code': 8,
+            'error_desc': 'No file passed'
+        })
+    file = request.files['file']
+    if file.filename.split('.')[-1] not in ['jpg', 'png']:
+        return jsonify({
+            'ok': False,
+            'error_code': 11,
+            'error_desc': 'Incorrect format. Avatars can be JPG or PNG'
+        })
+
+    if g.me.avatar_link is None:
+        g.me.avatar_link = generate_avatar_id(g.me.id)
+
+    temp = 'temp/' + file.filename
+    file.save(temp)
+    Image.open(temp).save('avatars/' + g.me.avatar_link)
+    os.remove(temp)
+
+    return jsonify({
+        'ok': True
+    })
+
+@app.route('/getAvatar')
+def download_my_avatar():
+    query_args = request.args
+
+    if 'user_id' not in query_args:
+        return jsonify({
+            'ok': False,
+            'error_code': 5,
+            'error_desc': 'You must pass user_id'
+        })
+
+    user_id = query_args['user_id']
+
+    user = store.get_session().query(Investor).filter(Investor.id == user_id).first()
+    if user is None:
+        return jsonify({
+            'ok': False,
+            'error_code': 10,
+            'error_desc': 'User with requested id doesn not exist'
+        })
+
+    return send_from_directory(directory='avatars/', path=user.avatar_link)
+
+
 @app.route('/register')
 def register():
     query_args = request.args
@@ -72,10 +130,12 @@ def register():
             'error_desc': 'User with this nickname already exists'
         })
 
-    new_investor = Investor(nickname, password, generate_access_token())
+    new_investor = Investor(nickname, password)
     db.add(new_investor)
     new_investor = db.query(Investor).filter(
         Investor.nickname == nickname).first()
+    new_investor.access_token = generate_access_token(new_investor.id)
+    new_investor.avatar_link = generate_avatar_id(new_investor.id)
 
     response = jsonify({
         'ok': True,
@@ -159,7 +219,6 @@ def user_profile():
         'info': {
             'user_id': profile_id,
             'nickname': req_investor.nickname,
-            'avatar_link': req_investor.avatar_link
         },
         'posts': posts_ids
     })
@@ -170,18 +229,21 @@ def set_my_info():
     query_args = request.args
     investor: Investor = g.me
 
-    if 'nickname' in query_args:
-        nickname = query_args['nickname']
-        if store.get_session().query(store.Investor).filter(Investor.nickname == nickname).first() is not None:
-            return jsonify({
-                'ok': False,
-                'error_code': 7,
-                'error_desc': 'This nickname is already taken'
-            })
-        investor.nickname = query_args['nickname']
+    if 'nickname' not in query_args:
+        return jsonify({
+            'ok': False,
+            'error_code': 5,
+            'error_desc': 'You mus pass nickname'
+        })
 
-    if 'avatar_link' in query_args:
-        investor.avatar_link = query_args['avatar_link']
+    nickname = query_args['nickname']
+    if store.get_session().query(store.Investor).filter(Investor.nickname == nickname).first() is not None:
+        return jsonify({
+            'ok': False,
+            'error_code': 7,
+            'error_desc': 'This nickname is already taken'
+        })
+    investor.nickname = query_args['nickname']
 
     return jsonify({
         'ok': True
@@ -217,7 +279,6 @@ def get_post():
         'author': {
             'user_id': author.id,
             'nickname': author.nickname,
-            'avatar_link': author.avatar_link
         },
         'text': post.text
     })
@@ -324,7 +385,6 @@ def posts_by_topic():
             'author': {
                 'user_id': author.id,
                 'nickname': author.nickname,
-                'avatar_link': author.avatar_link
             },
             'text': post.text,
             'timestamp': post.timestamp
@@ -403,7 +463,6 @@ def comments_by_post():
             'commenter': {
                 'user_id': commenter.id,
                 'nickname': commenter.nickname,
-                'avatar_link': commenter.avatar_link
             },
             'comment_id': comment.id,
             'text': comment.text,
@@ -484,7 +543,6 @@ def subs_posts():
             'author': {
                 'user_id': author.id,
                 'nickname': author.nickname,
-                'avatar_link': author.avatar_link
             },
             'text': post.text,
             'timestamp': post.timestamp

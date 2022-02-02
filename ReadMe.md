@@ -1,31 +1,34 @@
-# API
+# HackChange-Server
 
-В каждом запросе (кроме register и login) обязан быть access_token
+## API
 
-В каждом ответе (кроме getAvatar) есть параметр ok(True/False)
+access_token must be in each request (except register & login)
 
-Если ок, см. возвращаемые поля в таблице методов
+Each answer (except getAvatar) contains _ok_ parameter (_True / False_)
 
-Если не ок, возвращается error_code и error_desc(Описание ошибки) 
+If not ok, error_code and error_desc (error_description) are returned
 
-## Список методов
-| Метод | Параметры | Ответ |
-| --- | --- | --- |
-| register | nickname, password | user_id, access_token |
-| login | nickname, password | user_id, access_token |
-| getProfile | user_id | am_i_subscribed, subscribers_count(Количество подписчиков на этой странице) info(user_id, nickname), посты user'а[post_id] |
-| setMyInfo | nickname | -- |
-| getPost | post_id | post_id, votes_count, timestamp, topic(topic_id, title), author(user_id, nickname), text(контент) |
-| allInstruments | -- | instruments[instrument_id, name(короткое название), details(описание)] |
-| addTopic | instrument_id, title(название) | -- |
-| topicsByInstrument | instrument_id | topics[topic_id, title(название)] |
-| postsByTopic | topic_id | posts[votes_count, post_id, timestamp, author(user_id, nickname), topic(topic_id, title), text] |
-| addPost | topic_id, text(контент) | -- |
-| addComment | post_id, text | -- |
-| commentsByPost | post_id | comments[comment_id, timestamp, commenter (user_id, nickname), text] |
-| subscribe | user_id | -- |
-| unsubscribe | user_id | -- |
-| mySubscriptionsPosts| -- | posts[votes_count, post_id, timestamp, author(user_id, nickname), topic(topic_id, title), text] |
-| subscribersCount | user_id | subs_count(Количество подписчиков) |
-| uploadAvatar | file(Изображение побайтовое. JPG или PNG) | -- |
-| getAvatar | user_id | avatar (единственный результат, без поля 'ok'!) |
+If ok, look at the table below to see what is returned
+
+### Methods list
+
+| Method               | Params                          | Response                                                                                                              |
+| -------------------- | ------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| register             | nickname, password              | user_id, access_token                                                                                                 |
+| login                | nickname, password              | user_id, access_token                                                                                                 |
+| getProfile           | user_id                         | am_i_subscribed, subscribers_count(Count of subscribers on this page) info(user_id, nickname), posts by user[post_id] |
+| setMyInfo            | nickname                        | --                                                                                                                    |
+| getPost              | post_id                         | post_id, votes_count, timestamp, topic(topic_id, title), author(user_id, nickname), text(content)                     |
+| allInstruments       | --                              | instruments[instrument_id, name(short title), details(description)]                                                   |
+| addTopic             | instrument_id, title            | --                                                                                                                    |
+| topicsByInstrument   | instrument_id                   | topics[topic_id, title]                                                                                               |
+| postsByTopic         | topic_id                        | posts[votes_count, post_id, timestamp, author(user_id, nickname), topic(topic_id, title), text]                       |
+| addPost              | topic_id, text(контент)         | --                                                                                                                    |
+| addComment           | post_id, text                   | --                                                                                                                    |
+| commentsByPost       | post_id                         | comments[comment_id, timestamp, commenter (user_id, nickname), text]                                                  |
+| subscribe            | user_id                         | --                                                                                                                    |
+| unsubscribe          | user_id                         | --                                                                                                                    |
+| mySubscriptionsPosts | --                              | posts[votes_count, post_id, timestamp, author(user_id, nickname), topic(topic_id, title), text]                       |
+| subscribersCount     | user_id                         | subs_count(subscribers count)                                                                                         |
+| uploadAvatar         | file(bitmap image - JPG or PNG) | --                                                                                                                    |
+| getAvatar            | user_id                         | avatar (the only result, without "ok" field!)                                                                         |

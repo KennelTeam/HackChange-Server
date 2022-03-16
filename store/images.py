@@ -20,30 +20,33 @@ class Investor(Base):
         super().__init__()
         self.nickname = nickname
         self.password = password
-        
+
+
 class Instrument(Base):
     __tablename__ = 'instruments'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(30))
-    details = Column(String(100))
+    details = Column(String(200))
 
     def __init__(self, name: str, details: str) -> None:
         super().__init__()
         self.name = name
         self.details = details
 
+
 class Topic(Base):
     __tablename__ = 'topics'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     instrument_id = Column(Integer)
-    title = Column(String(32))
+    title = Column(String(96))
 
     def __init__(self, instrument_id: int, title: str) -> None:
         super().__init__()
         self.instrument_id = instrument_id
         self.title = title
+
 
 class Post(Base):
     __tablename__ = 'posts'
@@ -75,6 +78,7 @@ class PostVoting(Base):
         self.post_id = post_id
         self.investor_id = investor_id
         self.up_voted = up_voted
+
 
 class Subscription(Base):
     __tablename__ = 'subscriptions'

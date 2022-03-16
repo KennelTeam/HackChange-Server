@@ -1,0 +1,72 @@
+[
+    {
+        "topic_id": 1,
+        "posts": [
+            {
+                "text": "Stocks close in the green, led by Amazon, Tesla, and Microsoft",
+                "investor_id": 1
+            },
+            {
+                "text": "Oil prices: The 'good, bad and ugly' scenarios, according to a BofA strategist",
+                "investor_id": 2
+            },
+            {
+                "text": "Tesla raises prices again in U.S., China amid inflation",
+                "investor_id": 3
+            },
+            {
+                "text": "Exclusive: Tesla stops work at Shanghai factory for two days amid China COVID curbs - internal notice",
+                "investor_id": 1
+            },
+            {
+                "text": "Chinese EV maker BYD raises prices citing jump in raw materials costs",
+                "investor_id": 2
+            },
+            {
+                "text": "Tesla Stock Pops As EV Maker Hikes Prices Ahead Of Berlin Factory Opening",
+                "investor_id": 1
+            },
+            {
+                "text": "Volkswagen Considers Making Electric Truck in U.S.",
+                "investor_id": 4
+            }
+        ]
+    },
+    {
+        "topic_id": 2,
+        "posts": [
+            {
+                "text": "Is Apple stock a great buy on weakness?",
+                "investor_id": 5
+            },
+            {
+                "text": "UPDATE 2-Apple supplier Foxconn's Q4 revenue falls as smartphone sales slip",
+                "investor_id": 6
+            },
+            {
+                "text": "Foxconn Partly Restarts Shenzhen iPhone Hub Hit by Lockdowns",
+                "investor_id": 4
+            },
+            {
+                "text": "New IPhones Help 5G Handsets Capture More Than Half the Market",
+                "investor_id": 1
+            },
+            {
+                "text": "The Global Fight Over Chips Is Only Going to Get Worse",
+                "investor_id": 3
+            },
+            {
+                "text": "Your Apple iPhone May Be Booby-Trapped",
+                "investor_id": 4
+            },
+            {
+                "text": "5 Dow Jones Stocks To Watch In March 2022: Apple Jumps",
+                "investor_id": 2
+            },
+            {
+                "text": "Apple (AAPL) is Expected To Launch iPhone 14 in Four Variants",
+                "investor_id": 6
+            }
+        ]
+    }
+]

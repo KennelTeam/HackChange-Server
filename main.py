@@ -78,12 +78,27 @@ def upload_file():
 
     temp = 'temp/' + file.filename
     file.save(temp)
-    Image.open(temp).save('avatars/' + g.me.avatar_link)
+    crop_img(Image.open(temp).convert('RGB')).save(
+        'avatars/' + g.me.avatar_link)
     os.remove(temp)
 
     return jsonify({
         'ok': True
     })
+
+
+def crop_img(im: Image):
+    width, height = im.size   # Get dimensions
+    new_side = min(width, height)
+
+    left = (width - new_side)/2
+    top = (height - new_side)/2
+    right = (width + new_side)/2
+    bottom = (height + new_side)/2
+
+    # Crop the center of the image
+    im = im.crop((left, top, right, bottom))
+    return im
 
 
 @app.route('/getAvatar')

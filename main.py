@@ -281,6 +281,32 @@ def set_my_info():
     })
 
 
+def json_from_post(post: Post) -> str:
+    session = store.get_session()
+    topic = session.query(Topic).filter(Topic.id == post.topic_id).first()
+    author = session.query(Investor).filter(
+        Investor.id == post.author_id).first()
+    votes_all = session.query(PostVoting).filter(PostVoting.post_id == post.id)
+    votes_count = len(votes_all.filter(PostVoting.up_voted == True).all(
+    )) - len(votes_all.filter(PostVoting.up_voted == False).all())
+
+    return jsonify({
+        'ok': True,
+        'post_id': post.id,
+        'votes_count': votes_count,
+        'timestamp': post.timestamp,
+        'topic': {
+            'topic_id': topic.id,
+            'title': topic.title
+        },
+        'author': {
+            'user_id': author.id,
+            'nickname': author.nickname,
+        },
+        'text': post.text
+    })
+
+
 @app.route('/getPost')
 def get_post():
     query_args = request.args
@@ -295,28 +321,7 @@ def get_post():
 
     session = store.get_session()
     post = session.query(Post).filter(Post.id == post_id).first()
-    topic = session.query(Topic).filter(Topic.id == post.topic_id).first()
-    author = session.query(Investor).filter(
-        Investor.id == post.author_id).first()
-    votes_all = session.query(PostVoting).filter(PostVoting.post_id == post.id)
-    votes_count = len(votes_all.filter(PostVoting.up_voted == True).all(
-    )) - len(votes_all.filter(PostVoting.up_voted == False).all())
-
-    return jsonify({
-        'ok': True,
-        'post_id': post_id,
-        'votes_count': votes_count,
-        'timestamp': post.timestamp,
-        'topic': {
-            'topic_id': topic.id,
-            'title': topic.title
-        },
-        'author': {
-            'user_id': author.id,
-            'nickname': author.nickname,
-        },
-        'text': post.text
-    })
+    return json_from_post(post)
 
 
 @app.route('/allInstruments')
@@ -451,11 +456,13 @@ def add_post():
     topic_id = query_args['topic_id']
     text = query_args['text']
 
-    store.get_session().add(Post(g.me.id, topic_id, text))
+    session = store.get_session()
+    new_post = Post(g.me.id, topic_id, text)
+    session.add(new_post)
+    session.flush()
+    session.refresh(new_post)
 
-    return jsonify({
-        'ok': True
-    })
+    return json_from_post(new_post)
 
 
 @app.route('/addComment')
